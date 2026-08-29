@@ -1074,6 +1074,29 @@ $('addGoal').onclick=()=>{
 renderAll();
 
 </script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+  import {
+    getFirestore,
+    doc,
+    setDoc,
+    getDoc
+  } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
+  const firebaseConfig = {
+    apiKey: "AIzaSyDop0xiy6O6vYSFcv4M8h2UJ4UV0TGPjQA",
+    authDomain: "mintcalendar-c2da5.firebaseapp.com",
+    projectId: "mintcalendar-c2da5",
+    storageBucket: "mintcalendar-c2da5.firebasestorage.app",
+    messagingSenderId: "118336666899",
+    appId: "1:118336666899:android:c820e6db089cc73a832ee6"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  console.log("Firebase 已連線");
+</script>
+  
 </body>
         </html>
