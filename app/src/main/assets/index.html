@@ -1,352 +1,266 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-Hant">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>My Little Calendar</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>薄荷奶油行事曆</title>
 
 <style>
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
+:root{
+  --mint:#8fcfba;
+  --dark:#559f89;
+  --soft:#dff3ea;
+  --cream:#fffaf0;
+  --ink:#40564e;
+  --muted:#789087;
+  --line:#c9ded5;
+  --rose:#f4d9dc;
+  --sky:#dbeaf4;
+  --sun:#f6e9b9;
+  --lav:#e8def1;
 }
+*{box-sizing:border-box}
 
 body{
   margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif;
-  background:#fffaf0;
-  color:#48645b;
+  padding:14px 12px 35px;
+  background:var(--cream);
+  color:var(--ink);
+  font-family:system-ui,-apple-system,sans-serif;
 }
 
-button,input,select,textarea{
-  font:inherit;
+.card{
+  background:#fffdf8;
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:15px;
+  margin-bottom:12px;
 }
 
-/* 啟動畫面 */
-#splash{
-  position:fixed;
-  inset:0;
-  z-index:9999;
-  background:#bfe6d6;
+.soft{
+  background:var(--soft);
+  border-radius:18px;
+  padding:13px;
+}
+
+.row{
   display:flex;
-  align-items:center;
-  justify-content:center;
-  transition:.5s;
-}
-
-.splashBox{
-  width:86%;
-  background:#fffaf0;
-  border-radius:35px;
-  padding:45px 20px;
-  text-align:center;
-  box-shadow:0 10px 35px rgba(60,100,85,.15);
-}
-
-.splashIcon{
-  font-size:80px;
-}
-
-.splashTitle{
-  font-size:25px;
-  font-weight:800;
-  letter-spacing:2px;
-  margin-top:12px;
-}
-
-.splashText{
-  margin-top:10px;
-  color:#76978b;
-}
-
-header{
-  background:#bfe6d6;
-  padding:28px 18px 22px;
-  border-radius:0 0 30px 30px;
-  text-align:center;
-}
-
-header h1{
-  margin:0;
-  font-size:23px;
-}
-
-header p{
-  margin:7px 0 0;
-  font-size:14px;
-  color:#64887b;
-}
-
-.container{
-  max-width:650px;
-  margin:auto;
-  padding:16px;
-}
-
-.monthBar{
-  display:flex;
-  align-items:center;
   justify-content:space-between;
-  margin:8px 0 15px;
+  align-items:center;
+  gap:8px;
 }
 
-.monthBar button{
-  border:0;
-  background:#dff3ea;
-  width:42px;
-  height:42px;
-  border-radius:50%;
-  font-size:20px;
-  color:#48645b;
-}
-
-#monthTitle{
+.title{
   font-size:21px;
   font-weight:800;
 }
 
-.calendar{
-  background:white;
-  border-radius:24px;
-  padding:13px;
-  box-shadow:0 5px 18px rgba(65,100,90,.08);
+.small{
+  font-size:12px;
+  color:var(--muted);
 }
 
-.week,
-.days{
+.stats{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:10px;
+}
+
+.stat{
+  text-align:center;
+  background:var(--soft);
+  padding:10px;
+  border-radius:16px;
+}
+
+.stat b{
+  font-size:22px;
+}
+
+.tabs,.chips,.moods{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+}
+
+.tabs{
+  margin-bottom:12px;
+}
+
+.btn{
+  border:1px solid var(--line);
+  background:#fffdf8;
+  color:var(--ink);
+  border-radius:999px;
+  padding:9px 12px;
+  font-weight:650;
+}
+
+.btn.on,.primary{
+  background:var(--dark);
+  color:white;
+  border-color:var(--dark);
+}
+
+.monthbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:12px;
+}
+
+.round{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:1px solid var(--line);
+  background:#fffdf8;
+  font-size:22px;
+  color:var(--dark);
+}
+
+.weekhead,.calendar{
   display:grid;
   grid-template-columns:repeat(7,1fr);
-  text-align:center;
+  gap:4px;
 }
 
-.week div{
-  padding:8px 0;
+.weekhead div{
+  text-align:center;
   font-size:12px;
-  font-weight:700;
-  color:#83a196;
+  color:var(--muted);
+  padding-bottom:4px;
 }
 
 .day{
-  min-height:48px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  border-radius:15px;
-  margin:2px;
-  position:relative;
+  min-height:70px;
+  border:1px solid var(--line);
+  background:#fffdf8;
+  border-radius:13px;
+  padding:5px;
+  overflow:hidden;
 }
 
-.day.today{
-  background:#e8f7f0;
-  font-weight:bold;
+.day.active{
+  border:2px solid var(--dark);
+  background:var(--soft);
 }
 
-.day.selected{
-  background:#9fd8c3;
-  color:white;
-  font-weight:bold;
+.num{
+  font-size:12px;
+  font-weight:800;
 }
 
-.day.hasEvent::after{
-  content:"";
-  position:absolute;
-  width:5px;
-  height:5px;
-  border-radius:50%;
-  background:#f1ad91;
-  bottom:5px;
+.dot{
+  font-size:9px;
+  padding:2px 3px;
+  border-radius:7px;
+  margin-top:3px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
-.plan{
-  margin-top:18px;
-  background:white;
-  border-radius:24px;
-  padding:18px;
-  box-shadow:0 5px 18px rgba(65,100,90,.08);
-}
+.work{background:var(--sky)}
+.family{background:var(--sun)}
+.date{background:var(--lav)}
+.important{background:var(--rose)}
+.self{background:var(--soft)}
 
-.plan h2{
-  font-size:18px;
-  margin:0 0 4px;
-}
-
-#selectedDate{
-  font-size:13px;
-  color:#829d93;
-  margin-bottom:14px;
+.chip{
+  font-size:12px;
+  padding:5px 8px;
+  border-radius:999px;
 }
 
 .event{
-  background:#f3faf7;
+  border:1px solid var(--line);
   border-radius:17px;
-  padding:12px;
-  margin-bottom:10px;
-  display:flex;
-  align-items:center;
-  gap:10px;
+  padding:11px;
+  margin-top:8px;
 }
 
-.event.done{
+.done{
   opacity:.55;
   text-decoration:line-through;
 }
 
-.eventInfo{
-  flex:1;
+.mood.selected{
+  outline:2px solid var(--dark);
 }
 
-.eventTitle{
-  font-weight:700;
-}
-
-.eventMeta{
-  font-size:12px;
-  color:#81968e;
-  margin-top:3px;
-}
-
-.iconBtn{
-  border:0;
-  background:transparent;
-  font-size:18px;
-}
-
-.empty{
-  text-align:center;
-  color:#9aada6;
-  padding:20px 0;
-}
-
-.addBtn{
-  width:100%;
-  border:0;
-  background:#9fd8c3;
-  color:white;
-  padding:14px;
-  border-radius:18px;
-  font-weight:800;
-  font-size:16px;
-  margin-top:8px;
-}
-
-.overlay{
-  display:none;
-  position:fixed;
-  inset:0;
-  z-index:100;
-  background:rgba(40,60,55,.3);
-  align-items:flex-end;
-  justify-content:center;
-}
-
-.modal{
-  width:100%;
-  max-width:650px;
-  background:#fffaf0;
-  border-radius:28px 28px 0 0;
-  padding:22px 18px 30px;
-}
-
-.modal h3{
-  margin-top:0;
-}
-
-.field{
-  margin-bottom:12px;
-}
-
-.field label{
+label{
   display:block;
   font-size:13px;
-  margin-bottom:5px;
-  color:#708b81;
+  margin-top:10px;
 }
 
-.field input,
-.field select,
-.field textarea{
+input,select{
   width:100%;
-  border:1px solid #d8e8e1;
-  background:white;
+  min-height:44px;
+  margin-top:4px;
+  border:1px solid var(--line);
   border-radius:14px;
-  padding:12px;
-  outline:none;
+  padding:9px;
+  background:#fffdf8;
+  font-size:15px;
+  color:var(--ink);
 }
 
-.field textarea{
-  resize:none;
-  height:75px;
+.hidden{
+  display:none;
 }
-
-.row{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-
-.saveBtn{
-  width:100%;
-  border:0;
-  background:#9fd8c3;
-  color:white;
-  padding:14px;
-  border-radius:16px;
-  font-weight:800;
-}
-
-.cancelBtn{
-  width:100%;
-  border:0;
-  background:#eee8df;
-  color:#6e7772;
-  padding:12px;
-  border-radius:16px;
-  margin-top:8px;
-}
-
-.smallTitle{
-  margin-top:20px;
-  font-size:14px;
-  font-weight:800;
-  color:#789389;
-}
-
-.goal{
-  background:#fff4dc;
-  border-radius:16px;
-  padding:12px;
-  margin-top:8px;
-}
-
 </style>
 </head>
 
 <body>
 
-<div id="splash">
-  <div class="splashBox">
-    <div class="splashIcon">🌱🗓️</div>
-    <div class="splashTitle">MY LITTLE CALENDAR</div>
-    <div class="splashText">今天也慢慢完成就好 ♡</div>
+<div class="card">
+  <div class="soft row">
+    <div>
+      <div class="small">🍃 TODAY</div>
+      <div class="title">今天也慢慢完成就好 ♡</div>
+      <div class="small">☁️ 輕鬆安排 · 不把生活塞太滿</div>
+    </div>
+    <div style="font-size:36px">🌿</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="small">今日行程</div>
+      <b id="count">0</b>
+    </div>
+
+    <div class="stat">
+      <div class="small">已完成</div>
+      <b id="doneCount">0</b>
+    </div>
   </div>
 </div>
 
-<header>
-  <h1>🍃 MY LITTLE CALENDAR</h1>
-  <p>今天也慢慢完成就好 ♡</p>
-</header>
+<div class="card">
 
-<div class="container">
-
-  <div class="monthBar">
-    <button onclick="changeMonth(-1)">‹</button>
-    <div id="monthTitle"></div>
-    <button onclick="changeMonth(1)">›</button>
+  <div class="tabs">
+    <button class="btn on tab" data-tab="month">🗓 月曆</button>
+    <button class="btn tab" data-tab="week">📖 本週</button>
+    <button class="btn tab" data-tab="goal">🎯 月目標</button>
   </div>
 
-  <div class="calendar">
+  <div id="monthView">
 
-    <div class="week">
+    <div class="monthbar">
+      <button id="prev" class="round">‹</button>
+
+      <div style="text-align:center">
+        <div class="small">MY LITTLE CALENDAR</div>
+        <div id="monthTitle" class="title"></div>
+      </div>
+
+      <button id="next" class="round">›</button>
+    </div>
+
+    <div class="weekhead">
       <div>日</div>
       <div>一</div>
       <div>二</div>
@@ -356,461 +270,810 @@ header p{
       <div>六</div>
     </div>
 
-    <div class="days" id="days"></div>
-
+    <div id="calendar" class="calendar"></div>
   </div>
 
-  <div class="plan">
+  <div id="weekView" class="hidden"></div>
 
-    <h2>🌱 TODAY'S PLAN</h2>
-    <div id="selectedDate"></div>
+  <div id="goalView" class="hidden">
+    <b>🎯 這個月想完成的事</b>
 
-    <div id="eventList"></div>
-
-    <button class="addBtn" onclick="openModal()">
-      ＋ 新增行程
-    </button>
-
-    <div class="smallTitle">⭐ 本月小目標</div>
-
-    <div class="goal">
-      <input
-        id="monthGoal"
-        placeholder="寫下這個月想完成的事情 ♡"
-        style="width:100%;border:0;background:transparent;outline:none;"
-        oninput="saveGoal()"
-      >
+    <div class="row" style="margin-top:8px">
+      <input id="goalInput" placeholder="例如：整理房間" style="margin:0">
+      <button id="addGoal" class="btn primary">＋</button>
     </div>
 
+    <div id="goals"></div>
   </div>
-
 </div>
 
-<div class="overlay" id="overlay">
+<div class="card">
 
-  <div class="modal">
-
-    <h3>🌷 新增行程</h3>
-
-    <div class="field">
-      <label>行程名稱</label>
-      <input id="eventTitle" placeholder="例如：上班、聚餐、繳費">
+  <div class="row">
+    <div>
+      <div class="small">✨ SELECTED DAY</div>
+      <b id="dateLabel"></b>
     </div>
 
-    <div class="row">
+    <button id="showForm" class="btn primary">＋ 新增行程</button>
+  </div>
 
-      <div class="field">
-        <label>時間</label>
-        <input id="eventTime" type="time">
-      </div>
+  <div class="chips" style="margin:10px 0">
+    <span class="chip work">💼 工作</span>
+    <span class="chip family">🏡 家庭</span>
+    <span class="chip date">☕ 約會</span>
+    <span class="chip important">⭐ 重要</span>
+    <span class="chip self">🌿 自己</span>
+  </div>
 
-      <div class="field">
-        <label>分類</label>
+  <div class="soft">
+    <b>😊 今天心情</b>
 
-        <select id="eventCategory">
-          <option>💼 工作</option>
-          <option>🏡 家庭</option>
-          <option>☕ 約會</option>
-          <option>⭐ 重要</option>
-          <option>🌿 自己</option>
-        </select>
-
-      </div>
-
+    <div class="moods" style="margin-top:8px">
+      <button class="btn mood">😊</button>
+      <button class="btn mood">🥰</button>
+      <button class="btn mood">😴</button>
+      <button class="btn mood">😤</button>
+      <button class="btn mood">🥲</button>
     </div>
+  </div>
 
-    <div class="field">
-      <label>
-        <input id="allDay" type="checkbox">
-        全天行程
-      </label>
-    </div>
+  <div id="events"></div>
+</div>
 
-    <div class="field">
-      <label>重複</label>
+<div id="formCard" class="card hidden">
 
-      <select id="repeat">
-        <option value="none">不重複</option>
-        <option value="daily">每天</option>
-        <option value="weekly">每週</option>
-        <option value="monthly">每月</option>
-      </select>
-    </div>
+  <b>🧸 新增可愛行程</b>
 
-    <div class="field">
-      <label>提醒</label>
+  <label>
+    ⏰ 時間（24 小時制）
 
-      <select id="reminder">
-        <option value="0">不提醒</option>
-        <option value="10">10 分鐘前</option>
-        <option value="30">30 分鐘前</option>
-        <option value="60">1 小時前</option>
-        <option value="1440">1 天前</option>
-      </select>
-    </div>
+    <select id="time">
+      <option value="">請選擇時間</option>
+      <option value="00:00">00:00</option>
+      <option value="01:00">01:00</option>
+      <option value="02:00">02:00</option>
+      <option value="03:00">03:00</option>
+      <option value="04:00">04:00</option>
+      <option value="05:00">05:00</option>
+      <option value="06:00">06:00</option>
+      <option value="07:00">07:00</option>
+      <option value="08:00">08:00</option>
+      <option value="09:00">09:00</option>
+      <option value="10:00">10:00</option>
+      <option value="11:00">11:00</option>
+      <option value="12:00">12:00</option>
+      <option value="13:00">13:00</option>
+      <option value="14:00">14:00</option>
+      <option value="15:00">15:00</option>
+      <option value="16:00">16:00</option>
+      <option value="17:00">17:00</option>
+      <option value="18:00">18:00</option>
+      <option value="19:00">19:00</option>
+      <option value="20:00">20:00</option>
+      <option value="21:00">21:00</option>
+      <option value="22:00">22:00</option>
+      <option value="23:00">23:00</option>
+    </select>
+  </label>
 
-    <div class="field">
-      <label>備註</label>
-      <textarea id="eventNote" placeholder="想記下什麼呢？"></textarea>
-    </div>
+  <label>
+    ✏️ 行程名稱
+    <input id="name" placeholder="今天要做什麼？">
+  </label>
 
-    <button class="saveBtn" onclick="saveEvent()">
-      儲存行程
-    </button>
+  <label>
+    🏷️ 分類
 
-    <button class="cancelBtn" onclick="closeModal()">
-      取消
-    </button>
+    <select id="type">
+      <option>工作</option>
+      <option>家庭</option>
+      <option>約會</option>
+      <option>重要</option>
+      <option>自己</option>
+    </select>
+  </label>
 
+  <label>
+    🔁 重複
+
+    <select id="repeat">
+      <option value="none">不重複</option>
+      <option value="weekly">每週固定</option>
+    </select>
+  </label>
+
+  <label>
+    🔔 提醒
+
+    <select id="reminder">
+      <option value="-1">不提醒</option>
+      <option value="0">準時</option>
+      <option value="10">10 分鐘前</option>
+      <option value="30">30 分鐘前</option>
+      <option value="60">1 小時前</option>
+      <option value="1440">1 天前</option>
+    </select>
+  </label>
+
+  <label>
+    📝 備註
+    <input id="note" placeholder="可以留一句提醒">
+  </label>
+
+  <div style="display:flex;gap:8px;margin-top:12px">
+    <button id="save" class="btn primary">儲存 ♡</button>
+    <button id="cancel" class="btn">取消</button>
   </div>
 
 </div>
 
 <script>
 
-let now = new Date();
+const icons={
+  工作:'💼',
+  家庭:'🏡',
+  約會:'☕',
+  重要:'⭐',
+  自己:'🌿'
+};
 
-let viewYear = now.getFullYear();
-let viewMonth = now.getMonth();
+const cls={
+  工作:'work',
+  家庭:'family',
+  約會:'date',
+  重要:'important',
+  自己:'self'
+};
 
-let selected =
-  `${viewYear}-${String(viewMonth+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
+const today=new Date();
 
-let events =
-  JSON.parse(localStorage.getItem("mintCalendarEvents") || "[]");
+const pad=n=>String(n).padStart(2,'0');
 
-function dateKey(y,m,d){
+const keyFrom=(y,m,d)=>
+`${y}-${pad(m+1)}-${pad(d)}`;
 
-  return `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+let sel=keyFrom(
+  today.getFullYear(),
+  today.getMonth(),
+  today.getDate()
+);
 
+let view={
+  y:today.getFullYear(),
+  m:today.getMonth()
+};
+
+let data=JSON.parse(
+  localStorage.getItem('mintCalendarData')
+  ||
+  '{"events":{},"moods":{},"goals":[]}'
+);
+
+const $=id=>document.getElementById(id);
+
+function persist(){
+  localStorage.setItem(
+    'mintCalendarData',
+    JSON.stringify(data)
+  );
+}
+
+function label(k){
+  let[y,m,d]=k.split('-');
+  return`${y}年 ${+m}月 ${+d}日`;
+}
+
+/* 強制轉成 24 小時格式 */
+function time24(v){
+
+  let m=String(v||'').match(
+    /^(\d{1,2}):(\d{2})$/
+  );
+
+  if(!m){
+    return String(v||'');
+  }
+
+  let hour=Math.max(
+    0,
+    Math.min(23,+m[1])
+  );
+
+  return pad(hour)+':'+m[2];
+}
+
+function stats(){
+
+  let a=data.events[sel]||[];
+
+  $('count').textContent=a.length;
+
+  $('doneCount').textContent=
+  a.filter(x=>x.done).length;
 }
 
 function renderCalendar(){
 
-  document.getElementById("monthTitle").textContent =
-    `${viewYear} 年 ${viewMonth+1} 月`;
+  let box=$('calendar');
 
-  let box = document.getElementById("days");
+  box.innerHTML='';
 
-  box.innerHTML="";
+  $('monthTitle').textContent=
+  `${view.y}年 ${view.m+1}月`;
 
-  let first =
-    new Date(viewYear,viewMonth,1).getDay();
+  let first=
+  new Date(view.y,view.m,1).getDay();
 
-  let total =
-    new Date(viewYear,viewMonth+1,0).getDate();
+  let days=
+  new Date(view.y,view.m+1,0).getDate();
 
   for(let i=0;i<first;i++){
-
-    box.appendChild(document.createElement("div"));
-
+    box.appendChild(
+      document.createElement('div')
+    );
   }
 
-  for(let d=1;d<=total;d++){
+  for(let d=1;d<=days;d++){
 
-    let key=dateKey(viewYear,viewMonth,d);
+    let k=keyFrom(
+      view.y,
+      view.m,
+      d
+    );
 
-    let div=document.createElement("div");
+    let b=
+    document.createElement('button');
 
-    div.className="day";
+    b.className=
+    'day'+
+    (k===sel?' active':'');
 
-    div.textContent=d;
+    let n=
+    document.createElement('div');
 
-    let todayKey =
-      dateKey(now.getFullYear(),now.getMonth(),now.getDate());
+    n.className='num';
 
-    if(key===todayKey)
-      div.classList.add("today");
+    n.textContent=
+    d+
+    (data.moods[k]
+      ?' '+data.moods[k]
+      :''
+    );
 
-    if(key===selected)
-      div.classList.add("selected");
+    b.appendChild(n);
 
-    if(events.some(e=>e.date===key))
-      div.classList.add("hasEvent");
+    (data.events[k]||[])
+    .slice(0,2)
+    .forEach(e=>{
 
-    div.onclick=()=>{
+      let x=
+      document.createElement('div');
 
-      selected=key;
+      x.className=
+      'dot '+cls[e.type];
 
-      renderCalendar();
+      x.textContent=
+      `${icons[e.type]} ${e.name}`;
 
-      renderEvents();
+      b.appendChild(x);
 
+    });
+
+    b.onclick=()=>{
+      sel=k;
+      renderAll();
     };
 
-    box.appendChild(div);
-
+    box.appendChild(b);
   }
-
-  renderEvents();
-
-  loadGoal();
-
-}
-
-function changeMonth(n){
-
-  viewMonth+=n;
-
-  if(viewMonth<0){
-
-    viewMonth=11;
-    viewYear--;
-
-  }
-
-  if(viewMonth>11){
-
-    viewMonth=0;
-    viewYear++;
-
-  }
-
-  selected=dateKey(viewYear,viewMonth,1);
-
-  renderCalendar();
-
 }
 
 function renderEvents(){
 
-  document.getElementById("selectedDate").textContent=selected;
+  $('dateLabel').textContent=
+  label(sel);
 
-  let list=document.getElementById("eventList");
+  let box=$('events');
 
-  let todayEvents =
-    events.filter(e=>e.date===selected);
+  box.innerHTML='';
 
-  if(!todayEvents.length){
+  let arr=
+  (data.events[sel]||[])
+  .slice()
+  .sort(
+    (a,b)=>
+    a.time.localeCompare(b.time)
+  );
 
-    list.innerHTML=
-      `<div class="empty">今天還沒有行程 🌿<br>留一點時間給自己也很好 ♡</div>`;
+  if(!arr.length){
 
-    return;
-
+    box.innerHTML=
+    '<div class="small" style="text-align:center;padding:20px">今天還沒有安排 🍃</div>';
   }
 
-  list.innerHTML="";
+  arr.forEach(e=>{
 
-  todayEvents
-    .sort((a,b)=>(a.time||"").localeCompare(b.time||""))
-    .forEach(e=>{
+    let c=
+    document.createElement('div');
 
-      let div=document.createElement("div");
+    c.className=
+    'event '+cls[e.type];
 
-      div.className="event"+(e.done?" done":"");
+    let rt='';
 
-      div.innerHTML=`
+    if(+e.reminder>=0){
 
-        <button class="iconBtn"
-          onclick="toggleDone('${e.id}')">
-          ${e.done?"☑️":"⬜"}
-        </button>
+      rt=
+      +e.reminder===0
+      ?'準時'
+      :
+      +e.reminder===60
+      ?'1小時前'
+      :
+      +e.reminder===1440
+      ?'1天前'
+      :
+      e.reminder+'分鐘前';
+    }
 
-        <div class="eventInfo">
+    c.innerHTML=`
+    <div class="row">
 
-          <div class="eventTitle">
-            ${escapeHtml(e.title)}
-          </div>
+      <div>
 
-          <div class="eventMeta">
-            ${e.allDay ? "全天" : (e.time || "未設定時間")}
-            ・ ${escapeHtml(e.category)}
-          </div>
+        <div
+        class="${e.done?'done':''}"
+        style="font-weight:800">
 
-          ${
-            e.note
-            ? `<div class="eventMeta">${escapeHtml(e.note)}</div>`
-            : ""
-          }
+        ${icons[e.type]}
+        ${time24(e.time)}
+        　
+        ${e.name}
 
         </div>
 
-        <button class="iconBtn"
-          onclick="deleteEvent('${e.id}')">
-          🗑️
+        <div class="small"
+        style="margin-top:5px">
+
+        ${e.type}
+        ${e.repeat==='weekly'
+          ?' · 每週固定'
+          :''
+        }
+        ${rt
+          ?' · 🔔 '+rt
+          :''
+        }
+
+        </div>
+
+        ${
+          e.note
+          ?
+          `<div style="font-size:13px;margin-top:5px">${e.note}</div>`
+          :
+          ''
+        }
+
+      </div>
+
+      <div style="display:flex;gap:5px;flex-direction:column">
+
+        <button class="btn finish">
+        ${e.done?'↩':'✓'}
         </button>
 
+        <button class="btn delete">
+        刪除
+        </button>
+
+      </div>
+
+    </div>
+    `;
+
+    c.querySelector('.finish').onclick=()=>{
+
+      e.done=!e.done;
+
+      persist();
+
+      renderAll();
+    };
+
+    c.querySelector('.delete').onclick=()=>{
+
+      let a=
+      data.events[sel]||[];
+
+      let idx=
+      a.indexOf(e);
+
+      if(idx>=0){
+        a.splice(idx,1);
+      }
+
+      persist();
+
+      renderAll();
+    };
+
+    box.appendChild(c);
+  });
+
+  stats();
+}
+
+function renderWeek(){
+
+  let box=$('weekView');
+
+  box.innerHTML='';
+
+  let base=
+  new Date(sel+'T00:00:00');
+
+  let start=
+  new Date(base);
+
+  start.setDate(
+    base.getDate()
+    -
+    base.getDay()
+  );
+
+  for(let i=0;i<7;i++){
+
+    let dt=
+    new Date(start);
+
+    dt.setDate(
+      start.getDate()+i
+    );
+
+    let k=
+    keyFrom(
+      dt.getFullYear(),
+      dt.getMonth(),
+      dt.getDate()
+    );
+
+    let card=
+    document.createElement('div');
+
+    card.className='event';
+
+    let arr=
+    data.events[k]||[];
+
+    card.innerHTML=
+    `<b>${label(k)}</b>`
+    +
+    (
+      arr.length
+      ?
+      ''
+      :
+      '<div class="small" style="margin-top:5px">沒有行程</div>'
+    );
+
+    arr.forEach(e=>{
+
+      card.innerHTML+=`
+      <div style="font-size:13px;margin-top:6px">
+
+      ${icons[e.type]}
+      ${time24(e.time)}
+      ${e.name}
+      ${e.done?' ✓':''}
+
+      </div>
       `;
-
-      list.appendChild(div);
-
     });
 
-}
-
-function openModal(){
-
-  document.getElementById("overlay").style.display="flex";
-
-}
-
-function closeModal(){
-
-  document.getElementById("overlay").style.display="none";
-
-}
-
-function saveEvent(){
-
-  let title =
-    document.getElementById("eventTitle").value.trim();
-
-  if(!title){
-
-    alert("請輸入行程名稱 ♡");
-
-    return;
-
+    box.appendChild(card);
   }
-
-  let event={
-
-    id:Date.now().toString(),
-
-    date:selected,
-
-    title:title,
-
-    time:document.getElementById("eventTime").value,
-
-    category:document.getElementById("eventCategory").value,
-
-    allDay:document.getElementById("allDay").checked,
-
-    repeat:document.getElementById("repeat").value,
-
-    reminder:Number(document.getElementById("reminder").value),
-
-    note:document.getElementById("eventNote").value.trim(),
-
-    done:false
-
-  };
-
-  events.push(event);
-
-  localStorage.setItem(
-    "mintCalendarEvents",
-    JSON.stringify(events)
-  );
-
-  scheduleReminder(event);
-
-  document.getElementById("eventTitle").value="";
-  document.getElementById("eventTime").value="";
-  document.getElementById("eventNote").value="";
-  document.getElementById("allDay").checked=false;
-
-  closeModal();
-
-  renderCalendar();
-
 }
 
-function toggleDone(id){
+function renderGoals(){
 
-  let e=events.find(x=>x.id===id);
+  let box=$('goals');
 
-  if(e)e.done=!e.done;
+  box.innerHTML='';
 
-  localStorage.setItem(
-    "mintCalendarEvents",
-    JSON.stringify(events)
-  );
+  data.goals.forEach((g,i)=>{
 
-  renderEvents();
+    let c=
+    document.createElement('div');
 
+    c.className='event row';
+
+    c.innerHTML=`
+    <span class="${g.done?'done':''}">
+    ${g.done?'✅':'🌱'}
+    ${g.text}
+    </span>
+
+    <div>
+      <button class="btn gd">✓</button>
+      <button class="btn gx">刪除</button>
+    </div>
+    `;
+
+    c.querySelector('.gd').onclick=()=>{
+
+      g.done=!g.done;
+
+      persist();
+
+      renderGoals();
+    };
+
+    c.querySelector('.gx').onclick=()=>{
+
+      data.goals.splice(i,1);
+
+      persist();
+
+      renderGoals();
+    };
+
+    box.appendChild(c);
+  });
 }
 
-function deleteEvent(id){
+function schedule(date,e){
 
-  if(!confirm("要刪除這個行程嗎？"))return;
-
-  events=events.filter(e=>e.id!==id);
-
-  localStorage.setItem(
-    "mintCalendarEvents",
-    JSON.stringify(events)
-  );
-
-  renderCalendar();
-
-}
-
-function scheduleReminder(e){
-
-  if(
-    !e.reminder ||
-    !e.time ||
-    e.allDay
-  ) return;
+  if(+e.reminder<0){
+    return;
+  }
 
   try{
 
     if(window.AndroidReminder){
 
       AndroidReminder.schedule(
-        e.id,
-        e.title,
-        e.date,
+        date,
         e.time,
-        e.reminder
+        e.name,
+        +e.reminder
       );
-
     }
 
-  }catch(err){
+  }catch(_){}
+}
 
-    console.log(err);
+function renderAll(){
 
+  renderCalendar();
+
+  renderEvents();
+
+  renderWeek();
+
+  renderGoals();
+
+  document
+  .querySelectorAll('.mood')
+  .forEach(b=>
+    b.classList.toggle(
+      'selected',
+      b.textContent.trim()
+      ===
+      data.moods[sel]
+    )
+  );
+}
+
+$('prev').onclick=()=>{
+
+  if(--view.m<0){
+
+    view.m=11;
+
+    view.y--;
   }
 
-}
+  renderCalendar();
+};
 
-function saveGoal(){
+$('next').onclick=()=>{
 
-  let key=`goal-${viewYear}-${viewMonth}`;
+  if(++view.m>11){
 
-  localStorage.setItem(
-    key,
-    document.getElementById("monthGoal").value
-  );
+    view.m=0;
 
-}
+    view.y++;
+  }
 
-function loadGoal(){
+  renderCalendar();
+};
 
-  let key=`goal-${viewYear}-${viewMonth}`;
+document
+.querySelectorAll('.tab')
+.forEach(b=>
 
-  document.getElementById("monthGoal").value =
-    localStorage.getItem(key)||"";
+  b.onclick=()=>{
 
-}
+    document
+    .querySelectorAll('.tab')
+    .forEach(x=>
+      x.classList.remove('on')
+    );
 
-function escapeHtml(text){
+    b.classList.add('on');
 
-  let div=document.createElement("div");
+    $('monthView')
+    .classList.toggle(
+      'hidden',
+      b.dataset.tab!=='month'
+    );
 
-  div.textContent=text;
+    $('weekView')
+    .classList.toggle(
+      'hidden',
+      b.dataset.tab!=='week'
+    );
 
-  return div.innerHTML;
+    $('goalView')
+    .classList.toggle(
+      'hidden',
+      b.dataset.tab!=='goal'
+    );
+  }
+);
 
-}
+document
+.querySelectorAll('.mood')
+.forEach(b=>
 
-renderCalendar();
+  b.onclick=()=>{
 
-setTimeout(()=>{
+    data.moods[sel]=
+    b.textContent.trim();
 
-  let splash=document.getElementById("splash");
+    persist();
 
-  splash.style.opacity="0";
+    renderAll();
+  }
+);
 
-  setTimeout(()=>splash.style.display="none",500);
+$('showForm').onclick=()=>{
 
-},1400);
+  $('formCard')
+  .classList
+  .remove('hidden');
+};
+
+$('cancel').onclick=()=>{
+
+  $('formCard')
+  .classList
+  .add('hidden');
+};
+
+$('save').onclick=()=>{
+
+  let e={
+
+    time:$('time').value,
+
+    name:
+    $('name').value.trim(),
+
+    type:
+    $('type').value,
+
+    repeat:
+    $('repeat').value,
+
+    reminder:
+    $('reminder').value,
+
+    note:
+    $('note').value.trim(),
+
+    done:false
+  };
+
+  if(!e.time||!e.name){
+
+    alert(
+      '請輸入時間和行程名稱'
+    );
+
+    return;
+  }
+
+  /* 保證儲存為 24 小時制 */
+  e.time=time24(e.time);
+
+  if(!data.events[sel]){
+
+    data.events[sel]=[];
+  }
+
+  data.events[sel].push(e);
+
+  schedule(sel,e);
+
+  if(e.repeat==='weekly'){
+
+    let base=
+    new Date(sel+'T00:00:00');
+
+    for(let i=1;i<=12;i++){
+
+      let dt=
+      new Date(base);
+
+      dt.setDate(
+        base.getDate()+i*7
+      );
+
+      let k=
+      keyFrom(
+        dt.getFullYear(),
+        dt.getMonth(),
+        dt.getDate()
+      );
+
+      if(!data.events[k]){
+
+        data.events[k]=[];
+      }
+
+      let copy={...e};
+
+      data.events[k]
+      .push(copy);
+
+      schedule(k,copy);
+    }
+  }
+
+  persist();
+
+  $('time').value='';
+
+  $('name').value='';
+
+  $('note').value='';
+
+  $('formCard')
+  .classList
+  .add('hidden');
+
+  renderAll();
+};
+
+$('addGoal').onclick=()=>{
+
+  let v=
+  $('goalInput')
+  .value
+  .trim();
+
+  if(!v){
+    return;
+  }
+
+  data.goals.push({
+    text:v,
+    done:false
+  });
+
+  $('goalInput').value='';
+
+  persist();
+
+  renderGoals();
+};
+
+renderAll();
 
 </script>
 
 </body>
-  </html>
+        </html>
