@@ -1094,6 +1094,66 @@ renderAll();
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  // ===== 雲端同步 =====
+const CLOUD_DOC = doc(db, "mintcalendar", "main");
+
+// 上傳目前手機資料到 Firebase
+async function syncToCloud() {
+  try {
+    const data = {};
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      data[key] = localStorage.getItem(key);
+    }
+
+    await setDoc(CLOUD_DOC, {
+      data: data,
+      updatedAt: new Date().toISOString()
+    });
+
+    console.log("✅ 已同步到雲端");
+  } catch (e) {
+    console.error("❌ 雲端同步失敗", e);
+  }
+}
+
+// 從 Firebase 下載資料
+async function loadFromCloud() {
+  try {
+    const snap = await getDoc(CLOUD_DOC);
+
+    if (snap.exists()) {
+      const cloud = snap.data();
+
+      if (cloud.data) {
+        Object.entries(cloud.data).forEach(([key, value]) => {
+          localStorage.setItem(key, value);
+        });
+      }
+
+      console.log("✅ 已從雲端載入");
+    }
+  } catch (e) {
+    console.error("❌ 雲端載入失敗", e);
+  }
+}
+
+// App 開啟時先讀取雲端
+await loadFromCloud();
+
+// localStorage 有變動後自動上傳
+const oldSetItem = localStorage.setItem.bind(localStorage);
+
+localStorage.setItem = function(key, value) {
+  oldSetItem(key, value);
+
+  clearTimeout(window.cloudSyncTimer);
+
+  window.cloudSyncTimer = setTimeout(() => {
+    syncToCloud();
+  }, 800);
+};
 
   console.log("Firebase 已連線");
 </script>
